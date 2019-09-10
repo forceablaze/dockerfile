@@ -1,0 +1,13 @@
+stages:
+  - woodpecker
+ 
+deploy:
+  stage: woodpecker
+  tags:
+    - docker
+  before_script:
+    - docker info
+  script:
+    - docker build -t woodpecker woodpecker
+  after_script:
+    - docker images

@@ -1,40 +1,22 @@
 FROM ubuntu-sdk
-ARG REV
-ARG SVN_USER
-ARG SVN_PASS
 RUN export http_proxy=http://proxy.olympus.co.jp:8080 \
   && export https_proxy=http://proxy.olympus.co.jp:8080 \
   && apt-get update \
   && apt-get install -y rabbitmq-server \
   && cd /var/lib/ \
-  && svn checkout http://osoft-de-c.olympus.co.jp/svn/ipf3/offshore-src/tools/woodpecker/trunk woodpecker \
-    --username $SVN_USER --password $SVN_PASS \
-  && cd woodpecker && svn up -r $REV --username $SVN_USER --password $SVN_PASS \
+  && git clone https://enosta.olympus.co.jp/gitlab_01/ipf3/woodpecker.git \
+  && git submodule update --init --recursive \
+  && cd woodpecker \
   && pip3 install -r requirements.txt \
   && unset http_proxy \
   && unset https_proxy
   
 RUN export http_proxy=http://proxy.olympus.co.jp:8080 \
   && export https_proxy=http://proxy.olympus.co.jp:8080 \
-  && mkdir /var/lib/woodpecker/utils \
-  && cd /var/lib/woodpecker/utils \
-  && svn checkout http://osoft-de-c.olympus.co.jp/svn/ipf3/offshore-src/tools/DebugLog/cvapp-log-analyzer cvlog \
-    --username $SVN_USER --password $SVN_PASS \
-  && pip3 install -r cvlog/requirements.txt \
-  && cd cvlog \
-  && chmod +x utils/* \
-  && svn checkout http://10.156.2.84/svn/ipf3/offshore-src/core/trunk/services/cv2k/include srv_include \
-    --username $SVN_USER --password $SVN_PASS \
-  && svn checkout http://10.156.2.84/svn/ipf3/offshore-src/core/trunk/common/include core_include \
-    --username $SVN_USER --password $SVN_PASS \
-  && svn checkout http://10.156.2.84/svn/ipf3/offshore-src/tools/DebugLog/DebugLogFormatter debug-symbol \
-    --username $SVN_USER --password $SVN_PASS \
-  && svn checkout http://10.156.2.84/svn/ipf3/offshore-src/cv2k/trunk/apps/include app_include \
-    --username $SVN_USER --password $SVN_PASS \
-  && svn checkout http://osoft-de-c.olympus.co.jp/svn/ipf3/offshore-src/tools/utility/mantis_utils \
-    --username $SVN_USER --password $SVN_PASS \
+  && cd /var/lib/woodpecker/utils/cvlog \
+  && pip3 install -r requirements.txt \
+  && ./checkout.sh
   && make prepare \
-  && cp -a cvlog /var/lib/woodpecker/woodpecker/ \
   && cd /var/lib/woodpecker/woodpecker \
   && python3 manage.py collectstatic \
   && unset http_proxy \
