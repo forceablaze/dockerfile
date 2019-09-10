@@ -15,7 +15,7 @@ RUN export http_proxy=http://proxy.olympus.co.jp:8080 \
   && export https_proxy=http://proxy.olympus.co.jp:8080 \
   && cd /var/lib/woodpecker/utils/cvlog \
   && pip3 install -r requirements.txt \
-  && ./checkout.sh
+  && ./checkout.sh \
   && make prepare \
   && cd /var/lib/woodpecker/woodpecker \
   && python3 manage.py collectstatic \
