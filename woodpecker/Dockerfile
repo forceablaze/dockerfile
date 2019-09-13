@@ -1,27 +1,28 @@
 FROM ubuntu-sdk
+
+ADD uwsgi.ini /var/lib/woodpecker/uwsgi.ini
+ADD utils /var/lib/woodpecker/utils
+ADD woodpecker /var/lib/woodpecker/woodpecker
+ADD requirements.txt /var/lib/woodpecker/requirements.txt
+
 RUN export http_proxy=http://proxy.olympus.co.jp:8080 \
   && export https_proxy=http://proxy.olympus.co.jp:8080 \
   && apt-get update \
   && apt-get install -y rabbitmq-server \
-  && cd /var/lib/ \
-  && git clone https://enosta.olympus.co.jp/gitlab_01/ipf3/woodpecker.git \
-  && git submodule update --init --recursive \
-  && cd woodpecker \
+  && cd /var/lib/woodpecker \
   && pip3 install -r requirements.txt \
   && unset http_proxy \
   && unset https_proxy
-  
+
 RUN export http_proxy=http://proxy.olympus.co.jp:8080 \
   && export https_proxy=http://proxy.olympus.co.jp:8080 \
   && cd /var/lib/woodpecker/utils/cvlog \
   && pip3 install -r requirements.txt \
-  && ./checkout.sh \
-  && make prepare \
   && cd /var/lib/woodpecker/woodpecker \
   && python3 manage.py collectstatic \
   && unset http_proxy \
   && unset https_proxy
-  
+
 RUN useradd woodpecker \
   && mkdir -p /var/lib/woodpecker/woodpecker/media \
   && chown -R root:woodpecker /var/lib/woodpecker \
