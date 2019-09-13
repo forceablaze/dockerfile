@@ -1,6 +1,14 @@
-FROM dorowu/ubuntu-desktop-lxde-vnc:bionic
+FROM rattydave/docker-ubuntu-xrdp-mate-custom:18.04
 
 ENV DEBIAN_FRONTEND=noninteractive
+
+ENV LANG ja_JP.UTF-8
+ENV LANGUAGE ja_JP:ja
+RUN echo 'LANG="ja_JP.UTF-8"' > /etc/default/locale && \
+    echo 'LANGUAGE="ja_JP:ja"' >> /etc/default/locale && \
+    echo 'LC_ALL="ja_JP.UTF-8"' >> /etc/default/locale && \
+    locale-gen $LANG && update-locale \
+ENV LC_ALL $LANG
 
 RUN export http_proxy=http://proxy.olympus.co.jp:8080 \
   && export https_proxy=http://proxy.olympus.co.jp:8080 \
@@ -32,19 +40,18 @@ RUN export http_proxy=http://proxy.olympus.co.jp:8080 \
   && unset http_proxy \
   && unset https_proxy
 
-ENV LANG ja_JP.UTF-8
-RUN locale-gen $LANG && update-locale
-ENV LC_ALL $LANG
-
 RUN export http_proxy=http://proxy.olympus.co.jp:8080 \
   && export https_proxy=http://proxy.olympus.co.jp:8080 \
   && apt-get install -y fonts-takao \
   && unset http_proxy \
   && unset https_proxy
 
-
 RUN export http_proxy=http://proxy.olympus.co.jp:8080 \
   && export https_proxy=http://proxy.olympus.co.jp:8080 \
   && git clone https://github.com/ko-ichi-h/khcoder /opt/khcoder \
   && unset http_proxy \
   && unset https_proxy
+
+
+ENV http_proxy=http://proxy.olympus.co.jp:8080
+ENV https_proxy=http://proxy.olympus.co.jp:8080
